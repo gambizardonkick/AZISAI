@@ -1,0 +1,813 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <title data-lang-en="Azisai Official" data-lang-ja="あじさい公式">あじさい公式</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" data-lang-en="Exclusive wager races on Roobet for code AZISAI07219!"
+        data-lang-ja="コードAZISAI07219でRoobetでの限定賭けレース！">
+    <meta property="og:image" content="https://i.ibb.co/4nVwRPbj/Screenshot-2025-05-14-093458.png">
+    <link rel="icon" type="image/jpg" href="/assets/logo.png">
+    <link rel="stylesheet" type="text/css" href="/css/app.css">
+    <link rel="stylesheet" type="text/css" href="/css/lb.css">
+    <link rel="stylesheet" type="text/css" href="/css/vendor.css">
+    <link rel="stylesheet" type="text/css" href="/css/cards.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/toast.css">
+    <style>
+        .draggable {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            width: 350px;
+            max-height: 325px;
+            overflow-y: auto;
+            border-radius: 8px;
+            z-index: 1000;
+            background: #0a1328;
+            border: 2px solid #2775ca;
+            box-shadow: 0 0 50px rgba(39, 117, 202, 0.9);
+        }
+
+
+        .controls {
+            display: flex;
+            align-items: center;
+            background-color: #333;
+            padding: 5px;
+            cursor: move;
+        }
+
+        .drag-handle {
+            flex-grow: 1;
+            text-align: left;
+            color: #2775ca;
+            font-size: 20px;
+            font-weight: 900;
+            box-shadow: 0 0 100px rgba(39, 117, 202, 1);
+            padding: 0 15px;
+        }
+
+        .close-btn {
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #2775ca;
+            font-size: 20px;
+            font-weight: 900;
+            line-height: 30px;
+            box-shadow: 0 0 100px rgba(39, 117, 202, 1);
+            padding: 0 20px;
+        }
+
+        iframe {
+            width: 100%;
+            height: calc(100% - 40px);
+            border: none;
+        }
+
+        .minimized-icon {
+            display: none; /* Changed this from flex to none so it's hidden by default */
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            width: 50px;
+            height: 50px;
+            border-radius: 25px;
+            /* Makes it round */
+            background-color: #333;
+            color: white;
+            font-size: 30px;
+            z-index: 1001;
+            /* Should be above the draggable player */
+            cursor: pointer;
+            box-shadow: 0 0 100px rgba(39, 117, 202, 1);
+        }
+
+        .open-btn {
+            background: none;
+            border: none;
+            color: #2775ca;
+            font-size: 20px;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        @media (max-width: 570px) {
+
+            /* center the player on mobile */
+            .draggable {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .code-description-container {
+                flex-direction: column;
+            }
+
+            .code-description-card,
+            .code-image {
+                min-width: 100%;
+            }
+
+            .code-image {
+                order: -1;
+                margin-bottom: 20px;
+            }
+        }
+
+        .code-description-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(39, 117, 202, 0.5);
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px) scaleX(1) rotate(20deg);
+            }
+
+            50% {
+                transform: translateY(-10px) scaleX(1) rotate(20deg);
+            }
+
+            100% {
+                transform: translateY(0px) scaleX(1) rotate(20deg);
+            }
+        }
+
+        @keyframes floatLeft {
+            0% {
+                transform: translateY(0px) scaleX(-1) rotate(20deg);
+            }
+
+            50% {
+                transform: translateY(-10px) scaleX(-1) rotate(20deg);
+            }
+
+            100% {
+                transform: translateY(0px) scaleX(-1) rotate(20deg);
+            }
+        }
+
+        .coin-container {
+            position: relative;
+            height: 0;
+            margin: 0;
+        }
+
+        .coin-left,
+        .coin-right {
+            position: absolute;
+            height: 100px;
+            width: auto;
+            opacity: 0.7;
+            top: -50px;
+        }
+
+        .coin-left {
+            left: 22%;
+            animation: floatLeft 3s ease-in-out infinite;
+        }
+
+        .coin-right {
+            right: 25%;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @media screen and (max-width: 768px) {
+            .coin-container {
+                display: none;
+            }
+        }
+
+        .language-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            margin-top: 20px;
+        }
+
+        .language-buttons button {
+            background-color: #2775ca;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .language-buttons button:hover {
+            background-color: #1b5aa0;
+        }
+
+        .language-buttons button.active {
+            background-color: #0e3d6b;
+            border: 2px solid #5ebeff;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="
+        background-color: #ffeb3b; 
+        color: #000; 
+        text-align: center; 
+        font-weight: bold; 
+        padding: 10px; 
+        font-size: 18px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        z-index: 2000;">
+        まるさいのX始動❗️ <a href="https://x.com/marusai205" target="_blank" style="color:#000; text-decoration:none;">@marusai205</a>
+    </div>
+    <div id="toast">
+        <span id="message"></span>
+    </div>
+    <div id="draggable-player" class="draggable">
+        <div id="controls" class="controls">
+            <div id="drag-handle" class="drag-handle">☰</div>
+            <button id="close-btn" class="close-btn">×</button>
+        </div>
+        <div style="padding: 18px 20px; font-family: 'Orbitron', sans-serif; color: white;">
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+
+                .glow-text {
+                    color: #5ebeff;
+                    text-shadow: 0 0 5px #2775ca, 0 0 10px #2775ca, 0 0 20px #1b5aa0;
+                    font-weight: 700;
+                    font-size: 14px;
+                    margin-bottom: 4px;
+                }
+
+                .glow-box {
+                    animation: pulse-glow 2s infinite;
+                }
+
+                @keyframes pulse-glow {
+                    0% {
+                        box-shadow: 0 0 10px rgba(94, 190, 255, 0.4), 0 0 20px rgba(94, 190, 255, 0.2);
+                    }
+
+                    50% {
+                        box-shadow: 0 0 20px rgba(94, 190, 255, 0.8), 0 0 40px rgba(94, 190, 255, 0.4);
+                    }
+
+                    100% {
+                        box-shadow: 0 0 10px rgba(94, 190, 255, 0.4), 0 0 20px rgba(94, 190, 255, 0.2);
+                    }
+                }
+
+                #resultBox span {
+                    display: block;
+                    margin-bottom: 6px;
+                }
+
+                input,
+                button {
+                    font-family: 'Orbitron', sans-serif;
+                }
+            </style>
+
+            <label for="usernameInput" class="glow-text" data-lang-en="Enter Username:"
+                data-lang-ja="ユーザー名を入力してください:">ユーザー名を入力してください:</label>
+            <input type="text" id="usernameInput" placeholder="Roobet Username"
+                style="width: 100%; padding: 7px; margin-top: 6px; background-color: #0c1a2e; border: none; border-radius: 4px; color: #5ebeff; box-shadow: 0 0 10px rgba(39,117,202,0.5);">
+
+            <button onclick="fetchUserStats()" class="glow-box"
+                style="margin-top: 12px; width: 100%; padding: 10px; background-color: #2775ca; color: white; border: none; border-radius: 4px; font-size: 14px; font-weight: bold;"
+                data-lang-en="Check Stats" data-lang-ja="統計を確認">統計を確認</button>
+
+            <div id="resultBox"
+                style="margin-top: 14px; font-size: 13px; color: #b0d9ff; max-height: 150px; overflow-y: auto;"></div>
+        </div>
+
+        <script>
+            // This function is outside the main language switch but needs to be aware of the current language
+            async function fetchUserStats() {
+                const username = document.getElementById("usernameInput").value.trim();
+                const resultBox = document.getElementById("resultBox");
+                const currentLang = document.documentElement.lang; // Get current language
+
+                if (!username) {
+                    resultBox.innerHTML = `<span style='color:red;'>${currentLang === 'en' ? 'Please enter a username.' : 'ユーザー名を入力してください。'}</span>`;
+                    return;
+                }
+
+                resultBox.innerHTML = `<span class='glow-text'>${currentLang === 'en' ? 'Fetching...' : '取得中...'}</span>`;
+
+                try {
+                    const [leaderboardRes, raffleRes] = await Promise.all([
+                        fetch("https://azisailbdata-q469.onrender.com/leaderboard"),
+                        fetch("https://azisairaffle.onrender.com/raffle/ticketsnoast")
+                    ]);
+
+                    const leaderboardData = await leaderboardRes.json();
+                    const raffleData = await raffleRes.json();
+
+                    const lbEntry = leaderboardData.find(p => p.username.toLowerCase() === username.toLowerCase());
+                    const raffleEntry = raffleData.find(p => p.username.toLowerCase() === username.toLowerCase());
+
+                    if (!lbEntry) {
+                        resultBox.innerHTML = `<span style="color:red;">${currentLang === 'en' ? 'Username not found in leaderboard.' : 'リーダーボードにユーザー名が見つかりません。'}</span>`;
+                        return;
+                    }
+
+                    const wagered = lbEntry.weightedWager;
+                    const rank = lbEntry.rank;
+                    const tickets = raffleEntry ? raffleEntry.ticketCount : 0;
+
+                    let wagerText, rankText;
+                    if (currentLang === 'en') {
+                        wagerText = `Wager For The Month: <span style="color:#00e0ff;">$${wagered.toLocaleString()}</span>`;
+                        rankText = `Leaderboard Rank: <span style="color:#ffda77;">#${rank}</span>`;
+                    } else { // Japanese
+                        wagerText = `今月の賭け金: <span style="color:#00e0ff;">$${wagered.toLocaleString()}</span>`;
+                        rankText = `リーダーボードの順位: <span style="color:#ffda77;">#${rank}</span>`;
+                    }
+
+                    resultBox.innerHTML = `
+                        <span class="glow-text">${wagerText}</span>
+                        <span class="glow-text">${rankText}</span>
+                    `;
+                } catch (err) {
+                    resultBox.innerHTML = `<span style='color:red;'>${currentLang === 'en' ? 'Error fetching data. Try again later.' : 'データの取得中にエラーが発生しました。後でもう一度お試しください。'}</span>`;
+                    console.error(err);
+                }
+            }
+        </script>
+    </div>
+
+    <div id="minimized-icon" class="minimized-icon">
+        <button id="open-btn" class="open-btn">📊</button> </div>
+    <canvas id="particleCanvas"></canvas>
+    <div class="glow-container">
+        <div class="left-glow"></div>
+        <div class="right-glow"></div>
+    </div>
+    <object type="image/png" data="/assets/left.png" id="leftsvg" height="100%">
+    </object>
+    <object type="image/png" data="/assets/right1.png" id="rightsvg" height="100%">
+    </object>
+    <header>
+        <nav>
+            <div class="logo-title">
+                <img src="/assets/logo.png" alt="Site logo" class="logo">
+                <h1 class="title">AZISAI</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="/leaderboard/roobet" data-lang-en="LEADERBOARDS"
+                        data-lang-ja="リーダーボード">リーダーボード</a></li>
+            </ul>
+        </nav>
+    </header>
+    <br>
+    <br>
+    <div data-v-1d580398="" data-v-e4097664="" id="appContent">
+        <div data-v-1d580398="" class="row text" style="margin-top: 50px;">
+            <span data-v-1d580398="" class="title" data-lang-en="COMPETE ON OUR LEADERBOARDs!"
+                data-lang-ja="リーダーボードで競いましょう！">リーダーボードで競いましょう！</span>
+            <div class="toggle-images" style="margin-top: 20px;">
+                <div class="image-wrapper">
+                    <img class="game-image clash-image" id="clashImage2" src="/assets/roobet.png"
+                        style="cursor: pointer;opacity: 1;" onclick="window.location.href='/leaderboard/roobet'">
+                    <div class="label">
+                        <div data-v-1d580398="" class="price-wrapper glow" style="font-size: 26px;">
+                            $ 10,000
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="language-buttons">
+            <button id="lang-en">English</button>
+            <button id="lang-ja">日本語</button>
+        </div>
+
+        <div data-v-1d580398="" class="row text" style="margin-top: 80px;">
+            <div class="card-container">
+                <a href="https://roobet.com/?ref=azisai07219" class="card-link" target="_blank">
+                    <div class="MuiBox-root css-1o7r9kk">
+                        <div class="MuiBox-root css-1t0wa4v">
+                            <img src="/assets/roobet.png" alt="">
+                        </div>
+
+                        <div class="code-container MuiBox-root css-0">
+                            <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium" viewBox="0 0 24 24">
+                                <path d="M6.41 6 5 7.41 9.58 12 5 16.59 6.41 18l6-6z"></path>
+                                <path d="m13 6-1.41 1.41L16.17 12l-4.58 4.59L13 18l6-6z"></path>
+                            </svg>
+                            <p style="font-size: 24px;" data-lang-en="Code" data-lang-ja="招待コード :">招待コード :</p>
+                            <p class="code">azisai07219</p>
+                            <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium" viewBox="0 0 24 24">
+                                <path d="M17.59 18 19 16.59 14.42 12 19 7.41 17.59 6l-6 6z"></path>
+                                <path d="m11 18 1.41-1.41L7.83 12l4.58-4.59L11 6l-6 6z"></path>
+                            </svg>
+                        </div>
+
+                        <div class="MuiBox-root css-18dqm7l">
+                            <div class="description MuiBox-root css-0">
+                                <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium" viewBox="0 0 24 24">
+                                    <path
+                                        d="M16.59 7.58 10 14.17l-3.59-3.58L5 12l5 5 8-8zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z">
+                                    </path>
+                                </svg>
+                                <p class="MuiTypography-root MuiTypography-body1"
+                                    data-lang-en="$10,000 MONTHLY LEADERBOARD" data-lang-ja="月間10,000ドルのリーダーボード">
+                                    月間10,000ドルのリーダーボード</p>
+                            </div>
+
+                            <div class="description MuiBox-root css-0">
+                                <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium" viewBox="0 0 24 24">
+                                    <path
+                                        d="M16.59 7.58 10 14.17l-3.59-3.58L5 12l5 5 8-8zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z">
+                                    </path>
+                                </svg>
+                                <p class="MuiTypography-root MuiTypography-body1" data-lang-en="Weekly Wager Bonus"
+                                    data-lang-ja="週間賭け金ボーナス">週間賭け金ボーナス</p>
+                            </div>
+
+                            <div
+                                style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:16px;">
+                                <a class="MuiButton-root signup-button" href="https://roobet.com/?ref=azisai07219"
+                                    target="_blank" data-lang-en="Sign up" data-lang-ja="登録">登録</a>
+                                <a class="MuiButton-root signup-button" href="/leaderboard/roobet" target="_blank"
+                                    data-lang-en="Leaderboard" data-lang-ja="リーダーボード">リーダーボード</a>
+                                <a href="javascript:void(0)"
+                                    onclick="document.getElementById('weekly-modal').style.display='block'"
+                                    class="MuiButton-root signup-button" data-lang-en="Weekly Wager Bonus"
+                                    data-lang-ja="週間賭け金ボーナス">週間賭け金ボーナス</a>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+<!-- 🪙 Weekly Bonus Modal -->
+<div id="weekly-modal"
+  style="display:none; padding:20px; background:#111; color:#fff; border-radius:12px; max-width:400px; margin:40px auto; text-align:center; box-shadow:0 0 25px #00ff99; position:relative;">
+  <button onclick="document.getElementById('weekly-modal').style.display='none'"
+    style="position:absolute; top:10px; right:16px; background:none; color:#00ffcc; border:none; font-size:20px;">✖</button>
+  <h2 style="color:#00ff99;" data-lang-en="Weekly Wager Bonus" data-lang-ja="週間復活ボーナス">週間復活ボーナス</h2>
+  <p data-lang-en="💰 $10 for $1000 wagered" data-lang-ja="💰 1000ドル賭けて10ドル獲得">💰 1000ドル賭けて10ドル獲得</p>
+  <p data-lang-en="🤑 $50 for $5000 wagered" data-lang-ja="🤑 5000ドル賭けて50ドル獲得">🤑 5000ドル賭けて50ドル獲得</p>
+  <p data-lang-en="🎉 $400 for $50000 wagered or more" data-lang-ja="🎉 50000ドル以上賭けて400ドル獲得">🎉 50000ドル以上賭けて400ドル獲得</p>
+  <div id="weekly-range" style="margin-top:10px; font-weight:bold; color:#00ffcc;"></div>
+  <div id="weekly-countdown" style="font-size:18px; margin:10px 0;"></div>
+  <div id="reward-names" style="margin-top:16px; text-align:left;">
+    <h3 style="color:#00ffaa;" data-lang-en="🎉 $10 Winners" data-lang-ja="🎉 10ドル当選者">🎉 10ドル当選者</h3>
+    <ul id="names-1000" style="padding-left:20px;"></ul>
+    <h3 style="color:#00ffaa;" data-lang-en="🎊 $50 Winners" data-lang-ja="🎊 50ドル当選者">🎊 50ドル当選者</h3>
+    <ul id="names-5000" style="padding-left:20px;"></ul>
+    <h3 style="color:#00ffaa;" data-lang-en="🏆 $400 Winners" data-lang-ja="🏆 400ドル当選者">🏆 400ドル当選者</h3>
+    <ul id="names-50000" style="padding-left:20px;"></ul>
+  </div>
+</div>
+
+
+<script>
+  let countdownIntervalId = null;
+  let currentPeriodData = null;
+
+  function getWeeklyPeriodData() {
+    const now = new Date();
+    const jstOffset = 9 * 60 * 60 * 1000;
+    const jstNow = new Date(now.getTime() + jstOffset);
+    const jstDay = jstNow.getUTCDay();
+    const daysSinceTuesday = (jstDay + 7 - 2) % 7;
+
+    const start = new Date(jstNow.getTime());
+    start.setUTCDate(jstNow.getUTCDate() - daysSinceTuesday);
+    start.setUTCHours(15, 0, 1, 0); // Tuesday 00:00:01 JST
+
+    const end = new Date(start.getTime() + 6 * 86400000);
+    end.setUTCHours(14, 59, 59, 999); // Monday 23:59:59 JST
+
+    const pad = (n) => String(n).padStart(2, '0');
+    const startMonth = pad(start.getUTCMonth() + 1);
+    const startDay = pad(start.getUTCDate());
+    const endMonth = pad(end.getUTCMonth() + 1);
+    const endDay = pad(end.getUTCDate());
+
+    return {
+      startISO: start.toISOString(),
+      endISO: end.toISOString(),
+      rangeText: {
+        en: `Weekly (${startMonth}/${startDay} – ${endMonth}/${endDay} JST)`,
+        ja: `週間 (${startMonth}/${startDay} – ${endMonth}/${endDay} JST)`
+      }
+    };
+  }
+
+  function setWeeklyRangeText() {
+    const lang = document.documentElement.lang || "ja";
+    const el = document.getElementById("weekly-range");
+    if (el && currentPeriodData) {
+      el.textContent = currentPeriodData.rangeText[lang] || currentPeriodData.rangeText["ja"];
+    }
+  }
+
+  function startCountdown() {
+    if (!currentPeriodData) return;
+    const el = document.getElementById("weekly-countdown");
+    const endTime = new Date(currentPeriodData.endISO).getTime();
+    const lang = document.documentElement.lang || "ja";
+
+    function updateCountdown() {
+      if (!el) return clearInterval(countdownIntervalId);
+      const now = Date.now();
+      const diff = endTime - now;
+
+      if (diff <= 0) {
+        el.textContent = lang === "en" ? "Reward period ended" : "報酬期間が終了しました";
+        clearInterval(countdownIntervalId);
+        countdownIntervalId = null;
+        return;
+      }
+
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff / 3600000) % 24);
+      const m = Math.floor((diff / 60000) % 60);
+      const s = Math.floor((diff / 1000) % 60);
+      const label = lang === "en" ? "⏳ Ends in" : "⏳ 終了まで";
+      el.textContent = `${label}: ${d}d ${h}h ${m}m ${s}s`;
+    }
+
+    if (countdownIntervalId) clearInterval(countdownIntervalId);
+    updateCountdown();
+    countdownIntervalId = setInterval(updateCountdown, 1000);
+  }
+
+async function fetchWinners() {
+  try {
+    const [res1000, res5000, res50000] = await Promise.all([
+      fetch("https://azisaiweekly-upnb.onrender.com/1000"),
+      fetch("https://azisaiweekly-upnb.onrender.com/5000"),
+      fetch("https://azisaiweekly-upnb.onrender.com/50000")
+    ]);
+
+    const names1000 = await res1000.json();
+    const names5000 = await res5000.json();
+    const names50000 = await res50000.json();
+
+    const ul1000 = document.getElementById("names-1000");
+    const ul5000 = document.getElementById("names-5000");
+    const ul50000 = document.getElementById("names-50000");
+    if (!ul1000 || !ul5000 || !ul50000) return;
+
+    ul1000.innerHTML = "";
+    ul5000.innerHTML = "";
+    ul50000.innerHTML = "";
+
+    names1000.forEach(user => {
+      const li = document.createElement("li");
+      li.textContent = user.name || user.username || String(user);
+      ul1000.appendChild(li);
+    });
+
+    names5000.forEach(user => {
+      const li = document.createElement("li");
+      li.textContent = user.name || user.username || String(user);
+      ul5000.appendChild(li);
+    });
+
+    names50000.forEach(user => {
+      const li = document.createElement("li");
+      li.textContent = user.name || user.username || String(user);
+      ul50000.appendChild(li);
+    });
+
+  } catch (err) {
+    console.error("Failed to fetch winners:", err);
+  }
+}
+
+  function refreshWeeklyModalUI() {
+    currentPeriodData = getWeeklyPeriodData();
+    setWeeklyRangeText();
+    startCountdown();
+    fetchWinners();
+  }
+
+  function onLanguageSwitch(newLang) {
+    if (document.documentElement.lang === newLang) return;
+    document.documentElement.lang = newLang;
+    refreshWeeklyModalUI();
+  }
+
+  window.onLanguageSwitch = onLanguageSwitch;
+
+  document.addEventListener("DOMContentLoaded", refreshWeeklyModalUI);
+</script>
+
+
+            <div data-v-1d580398="" class="row text" style="margin-top: 50px;">
+                <span data-v-1d580398="" class="title" data-lang-en="Our Socials!"
+                    data-lang-ja="私たちのソーシャルメディア！">私たちのソーシャルメディア！</span>
+            </div>
+
+            <style>
+                .social-media-cards {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 20px;
+                    justify-content: center;
+                    margin-top: 30px;
+                }
+
+                .social-media-cards .card {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    background: rgba(255, 255, 255, 0.05);
+                    padding: 10px 15px;
+                    border-radius: 8px;
+                    text-decoration: none;
+                    color: white;
+                    font-weight: 500;
+                    transition: transform 0.2s;
+                }
+
+                .social-media-cards .card:hover {
+                    transform: translateY(-3px);
+                }
+
+                .social-media-cards .icon {
+                    width: 24px;
+                    height: 24px;
+                    object-fit: contain;
+                }
+            </style>
+
+            <div class="social-media-cards">
+                <a href="https://youtube.com/@azisaikickakaibu" target="_blank" class="card kick">
+                    <img src="/assets/ytlive.png" alt="Kick Logo" class="icon" />
+                    <span>@Azisaikickakaibu</span>
+                </a>
+                <a href="https://x.com/azisaikirinuki" target="_blank" class="card discord">
+                    <img src="/assets/x.png" alt="X Logo" class="icon" />
+                    <span>@azisaikirinuki</span>
+                </a>
+                <a href="https://x.com/marusai205" target="_blank" class="card discord">
+                    <img src="/assets/x.png" alt="X Logo" class="icon" />
+                    <span>@marusai205</span>
+                </a>
+                <a href="https://youtube.com/@azisai-onkazi-kirinuki" target="_blank" class="card youtube">
+                    <img src="/assets/youtube.png" alt="YouTube Logo" class="icon" />
+                    <span>@azisai-onkazi-kirinuki</span>
+                </a>
+                <a href="https://discord.gg/azisai" target="_blank" class="card discord">
+                    <img src="/assets/discord.png" alt="Discord Logo" class="icon" />
+                    <span>@azisai</span>
+                </a>
+            </div>
+
+            <script defer
+                src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015"
+                integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ=="
+                data-cf-beacon='{"rayId":"93f5c327eff14c77","version":"2025.4.0-1-g37f21b1","r":1,"token":"6a289e34095c4e319f5a765107c772ad","serverTiming":{"name":{"cfExtPri":true,"cfL4":true,"cfSpeedBrain":true,"cfCacheStatus":true}}}'
+                crossorigin="anonymous"></script>
+</body>
+<script src="/js/app.js"></script>
+<script src="/js/particles.js"></script>
+<script src="/js/toast.js"></script>
+
+<script>
+    window.onload = function () {
+        const player = document.getElementById('draggable-player');
+        const dragHandle = document.getElementById('drag-handle');
+        const closeBtn = document.getElementById('close-btn');
+        const minimizedIcon = document.getElementById('minimized-icon'); // Now this will find an element
+        const openBtn = document.getElementById('open-btn');             // Now this will find an element
+
+        // Mouse drag
+        if (dragHandle && player) {
+            dragHandle.onmousedown = function (event) {
+                event.preventDefault();
+                const startX = event.clientX - player.offsetLeft;
+                const startY = event.clientY - player.offsetTop;
+
+                function onMouseMove(event) {
+                    player.style.left = event.clientX - startX + 'px';
+                    player.style.top = event.clientY - startY + 'px';
+                }
+
+                document.addEventListener('mousemove', onMouseMove);
+
+                document.onmouseup = function () {
+                    document.removeEventListener('mousemove', onMouseMove);
+                };
+            };
+        }
+
+
+        // Touch drag (mobile)
+        if (dragHandle && player) {
+            dragHandle.ontouchstart = function (event) {
+                const touch = event.touches[0];
+                const startX = touch.clientX - player.offsetLeft;
+                const startY = touch.clientY - player.offsetTop;
+
+                function onTouchMove(event) {
+                    event.preventDefault(); // ✅ prevent page from scrolling
+                    const touch = event.touches[0];
+                    player.style.left = touch.clientX - startX + 'px';
+                    player.style.top = touch.clientY - startY + 'px';
+                }
+
+                document.addEventListener('touchmove', onTouchMove, { passive: false });
+
+                document.ontouchend = function () {
+                    document.removeEventListener('touchmove', onTouchMove);
+                };
+            };
+        }
+
+        // Minimize / Restore
+        if (closeBtn && player && minimizedIcon) { // Check if elements exist
+            closeBtn.onclick = function () {
+                player.style.display = 'none';
+                minimizedIcon.style.display = 'flex'; // Use flex to center the icon
+            };
+        }
+
+        if (openBtn && player && minimizedIcon) { // Check if elements exist
+            openBtn.onclick = function () {
+                player.style.display = 'block';
+                minimizedIcon.style.display = 'none';
+            };
+        }
+
+
+        const englishButton = document.getElementById('lang-en');
+        const japaneseButton = document.getElementById('lang-ja');
+
+        function setLanguage(lang) {
+            document.documentElement.lang = lang; // Set the HTML lang attribute
+
+            // Update all elements with data-lang attributes
+            document.querySelectorAll('[data-lang-en], [data-lang-ja]').forEach(element => {
+                if (lang === 'en' && element.dataset.langEn) {
+                    element.textContent = element.dataset.langEn;
+                } else if (lang === 'ja' && element.dataset.langJa) {
+                    element.textContent = element.dataset.langJa;
+                }
+            });
+
+            // Update placeholder for username input
+            const usernameInput = document.getElementById('usernameInput');
+            if (usernameInput) {
+                usernameInput.placeholder = lang === 'en' ? 'Roobet Username' : 'Roobetユーザー名';
+            }
+
+
+            // Update button active state
+            if (englishButton) englishButton.classList.remove('active');
+            if (japaneseButton) japaneseButton.classList.remove('active');
+
+            if (lang === 'en') {
+                if (englishButton) englishButton.classList.add('active');
+            } else {
+                if (japaneseButton) japaneseButton.classList.add('active');
+            }
+
+            // Re-run functions that display dynamic content that needs language awareness
+            updateCountdown();
+            // Call fetchUserStats only if the resultBox has content (i.e., stats were already fetched)
+            const resultBox = document.getElementById("resultBox");
+            if (resultBox && resultBox.children.length > 0) {
+                fetchUserStats();
+            }
+        }
+
+        // Add event listeners for language buttons
+        if (englishButton) {
+            englishButton.addEventListener('click', () => setLanguage('en'));
+        }
+        if (japaneseButton) {
+            japaneseButton.addEventListener('click', () => setLanguage('ja'));
+        }
+
+
+        // Set Japanese as default on load
+        setLanguage('ja');
+    };
+</script>
+
+</html>
