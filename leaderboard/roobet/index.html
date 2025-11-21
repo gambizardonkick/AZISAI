@@ -718,36 +718,38 @@
             </div>
 
             <style>
-                .social-media-cards {
-                    display: flex;
-                    flex-wrap: wrap;
-                    gap: 20px;
-                    justify-content: center;
-                    margin-top: 30px;
-                }
+.social-media-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+    margin-top: 40px;
+}
 
-                .social-media-cards .card {
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                    background: rgba(255, 255, 255, 0.05);
-                    padding: 10px 15px;
-                    border-radius: 8px;
-                    text-decoration: none;
-                    color: white;
-                    font-weight: 500;
-                    transition: transform 0.2s;
-                }
+.social-media-cards .card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 18px 26px;       /* BIGGER */
+    border-radius: 14px;      /* BIGGER */
+    text-decoration: none;
+    color: white;
+    font-weight: 600;         /* Bigger weight */
+    font-size: 20px;          /* BIGGER TEXT */
+    transition: transform 0.2s;
+}
 
-                .social-media-cards .card:hover {
-                    transform: translateY(-3px);
-                }
+.social-media-cards .card:hover {
+    transform: translateY(-5px) scale(1.03);
+}
 
-                .social-media-cards .icon {
-                    width: 24px;
-                    height: 24px;
-                    object-fit: contain;
-                }
+.social-media-cards .icon {
+    width: 40px;              /* BIGGER ICON */
+    height: 40px;             /* BIGGER ICON */
+    object-fit: contain;
+}
+
             </style>
 
             <div class="social-media-cards">
